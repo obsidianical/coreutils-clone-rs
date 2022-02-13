@@ -4,8 +4,7 @@ pub struct Argument {
     pub value: String
 }
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum ArgType {
     Param,
     Group,
@@ -20,17 +19,24 @@ impl Argument {
         }
     }
 
-    fn detect_flag(arg: &String) -> ArgType {
+    fn detect_flag(arg: &str) -> ArgType {
         let mut arg_chars = arg.chars();
 
-        if arg_chars.nth(0).unwrap() == '-' && arg.len() != 1 {
-            if arg_chars.nth(1).unwrap() == '-' {
+        if arg_chars.next().unwrap() == '-' && arg.len() > 1 {
+            if arg_chars.next().unwrap() == '-' {
                 return ArgType::Long
             } 
             return ArgType:: Group
         }
+        ArgType::Param
+    }
 
-        return ArgType::Param
+    pub fn check_flag(&self, short_form: &str, long_form: &str) -> bool {
+        match self.arg_type {
+            ArgType::Long => self.value.eq(long_form),
+            ArgType::Group => self.value.contains(short_form),
+            _ => false
+        }
     }
 }
 

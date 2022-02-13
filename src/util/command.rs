@@ -17,7 +17,7 @@ impl Command {
         }
     }
 
-    fn find_name(args: &Vec<String>) -> String {
+    fn find_name(args: &[String]) -> String {
         let r = String::from(match args.get(1) {
             Some(v) => v,
             None => err_out(String::from("No command provided!"), 1),
@@ -26,12 +26,24 @@ impl Command {
         r
     }
 
-    fn parse_args(args: &Vec<String>) -> Vec<Argument> {
+    fn parse_args(args: &[String]) -> Vec<Argument> {
         let mut r: Vec<Argument> = vec![];
 
         for arg in &args[2..] {
             r.push(Argument::new(arg.to_string()));
         }
+
+        r
+    }
+
+    pub fn flag_passed(&self, short_form: &str, long_form: &str) -> bool {
+        let r = self.args.iter().any(|arg| {
+            if arg.arg_type == ArgType::Param {
+                return false;
+            }
+
+            arg.check_flag(short_form, long_form)
+        });
 
         r
     }
